@@ -15,18 +15,20 @@ import petros.efthymiou.groovy.playlist.PlaylistRepository
 import petros.efthymiou.groovy.playlist.PlaylistViewModel
 import petros.efthymiou.groovy.utils.BaseUnitTest
 import petros.efthymiou.groovy.utils.getValueForTest
+import java.lang.RuntimeException
 
 /**
  * Example local unit test, which will execute on the development machine (host).
  *
  * See [testing documentation](http://d.android.com/tools/testing).
  */
-class PlaylistViewModelShould : BaseUnitTest(){
+class PlaylistViewModelShould : BaseUnitTest() {
 
 
     private val repository: PlaylistRepository = mock()
     private val playlists = mock<List<Playlist>>()
     private val expected = Result.success(playlists)
+    private val exception = RuntimeException("Something went wrong")
 
     private fun mockSuccessfulCase(): PlaylistViewModel {
         runBlocking {
@@ -40,7 +42,7 @@ class PlaylistViewModelShould : BaseUnitTest(){
     }
 
     @Test
-    fun getPlaylistsFromRepository() = runBlockingTest{
+    fun getPlaylistsFromRepository() = runBlockingTest {
         val viewModel = mockSuccessfulCase()
 
         viewModel.playlists.getValueForTest()
@@ -49,11 +51,23 @@ class PlaylistViewModelShould : BaseUnitTest(){
     }
 
     @Test
-    fun emitsPlaylistsFromRepository() = runBlockingTest{
+    fun emitsPlaylistsFromRepository() = runBlockingTest {
         val viewModel = mockSuccessfulCase()
 
         assertEquals(expected, viewModel.playlists.getValueForTest())
     }
 
+    @Test
+    fun emitErrorWhenReceiveError() {
+        runBlocking {
+            whenever(repository.getPlaylists()).thenReturn(flow {
+                emit(Result.failure(exception))
+            })
+        }
+
+        val viewModel = PlaylistViewModel(repository)
+
+        assertEquals(exception, viewModel.playlists.getValueForTest()!!.exceptionOrNull())
+    }
 
 }
