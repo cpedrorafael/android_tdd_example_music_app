@@ -8,6 +8,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runBlockingTest
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import petros.efthymiou.groovy.playlist.PlayListAPI
 import petros.efthymiou.groovy.playlist.Playlist
 import petros.efthymiou.groovy.playlist.PlaylistService
 import petros.efthymiou.groovy.utils.BaseUnitTest

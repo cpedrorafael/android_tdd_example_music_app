@@ -3,10 +3,10 @@ package petros.efthymiou.groovy.playlist
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
-import petros.efthymiou.groovy.playlists.PlayListAPI
 import java.lang.RuntimeException
+import javax.inject.Inject
 
-class PlaylistService(private val playListAPI: PlayListAPI) {
+class PlaylistService @Inject constructor (private val playListAPI: PlayListAPI) {
     suspend fun fetchPlaylists(): Flow<Result<List<Playlist>>> {
         return flow {
             emit(Result.success(playListAPI.getPlaylists()))
