@@ -7,7 +7,7 @@ import java.lang.RuntimeException
 import javax.inject.Inject
 
 class PlaylistService @Inject constructor (private val playListAPI: PlayListAPI) {
-    suspend fun fetchPlaylists(): Flow<Result<List<Playlist>>> {
+    suspend fun fetchPlaylists(): Flow<Result<List<PlaylistRaw>>> {
         return flow {
             emit(Result.success(playListAPI.getPlaylists()))
         }.catch {

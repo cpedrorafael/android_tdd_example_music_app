@@ -10,6 +10,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import petros.efthymiou.groovy.playlist.PlayListAPI
 import petros.efthymiou.groovy.playlist.Playlist
+import petros.efthymiou.groovy.playlist.PlaylistRaw
 import petros.efthymiou.groovy.playlist.PlaylistService
 import petros.efthymiou.groovy.utils.BaseUnitTest
 import java.lang.RuntimeException
@@ -17,7 +18,7 @@ import java.lang.RuntimeException
 class PlaylistServiceShould : BaseUnitTest() {
     private lateinit var service : PlaylistService
     private val playlistAPI : PlayListAPI = mock()
-    private val playlists = mock<List<Playlist>>()
+    private val playlists = mock<List<PlaylistRaw>>()
 
     @Test
     fun getPlaylistFromAPI() = runBlockingTest {

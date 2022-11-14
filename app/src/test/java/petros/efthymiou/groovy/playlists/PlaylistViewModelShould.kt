@@ -14,6 +14,7 @@ import petros.efthymiou.groovy.playlist.Playlist
 import petros.efthymiou.groovy.playlist.PlaylistRepository
 import petros.efthymiou.groovy.playlist.PlaylistViewModel
 import petros.efthymiou.groovy.utils.BaseUnitTest
+import petros.efthymiou.groovy.utils.captureValues
 import petros.efthymiou.groovy.utils.getValueForTest
 import java.lang.RuntimeException
 
@@ -41,6 +42,16 @@ class PlaylistViewModelShould : BaseUnitTest() {
         return PlaylistViewModel(repository)
     }
 
+    private fun mockErrorCase(): PlaylistViewModel {
+        runBlocking {
+            whenever(repository.getPlaylists()).thenReturn(flow {
+                emit(Result.failure(exception))
+            })
+        }
+
+        return PlaylistViewModel(repository)
+    }
+
     @Test
     fun getPlaylistsFromRepository() = runBlockingTest {
         val viewModel = mockSuccessfulCase()
@@ -59,15 +70,38 @@ class PlaylistViewModelShould : BaseUnitTest() {
 
     @Test
     fun emitErrorWhenReceiveError() {
-        runBlocking {
-            whenever(repository.getPlaylists()).thenReturn(flow {
-                emit(Result.failure(exception))
-            })
-        }
-
-        val viewModel = PlaylistViewModel(repository)
+        val viewModel = mockErrorCase()
 
         assertEquals(exception, viewModel.playlists.getValueForTest()!!.exceptionOrNull())
+    }
+
+    @Test
+    fun showSpinnerWhenLoading() = runBlockingTest {
+        val viewModel = mockSuccessfulCase()
+        viewModel.loader.captureValues{
+            viewModel.playlists.getValueForTest()
+            assertEquals(true, values[0])
+        }
+    }
+
+    @Test
+    fun closeLoaderAfterPlaylistLoads() = runBlockingTest{
+        val viewModel = mockSuccessfulCase()
+        viewModel.loader.captureValues {
+            viewModel.playlists.getValueForTest()
+
+            assertEquals(false, values.last())
+        }
+    }
+
+ @Test
+    fun closeLoaderAfterError() = runBlockingTest{
+        val viewModel = mockErrorCase()
+        viewModel.loader.captureValues {
+            viewModel.playlists.getValueForTest()
+
+            assertEquals(false, values.last())
+        }
     }
 
 }

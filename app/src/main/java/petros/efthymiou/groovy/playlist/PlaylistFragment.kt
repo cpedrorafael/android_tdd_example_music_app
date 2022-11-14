@@ -9,10 +9,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.NavDirections
+import androidx.navigation.findNavController
 import dagger.hilt.android.AndroidEntryPoint
-import okhttp3.OkHttpClient
+import kotlinx.android.synthetic.main.fragment_playlist.*
+import kotlinx.android.synthetic.main.fragment_playlist.view.*
 import petros.efthymiou.groovy.R
-import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Inject
 
@@ -33,9 +35,16 @@ class PlaylistFragment : Fragment() {
 
         setupViewModel()
 
+        viewModel.loader.observe(this as LifecycleOwner) { loading ->
+            when (loading) {
+                true -> loader.visibility = View.VISIBLE
+                else -> loader.visibility = View.GONE
+            }
+        }
+
         viewModel.playlists.observe(this as LifecycleOwner) { playlists ->
             if(playlists.getOrNull() != null)
-                setupList(view, playlists.getOrNull()!!)
+                setupList(view.playlists_list, playlists.getOrNull()!!)
             else {
                 //TODO handle null value
             }
@@ -49,7 +58,13 @@ class PlaylistFragment : Fragment() {
     ) {
         with(view as RecyclerView) {
             layoutManager = LinearLayoutManager(context)
-            adapter = MyPlaylistRecyclerViewAdapter(playlists)
+            adapter = MyPlaylistRecyclerViewAdapter(playlists) { id ->
+                val action: NavDirections =
+                    petros.efthymiou.groovy.playlist.PlaylistFragmentDirections.actionPlaylistFragmentToPlaylistDetailsFragment(
+                        id
+                    )
+                findNavController().navigate(action)
+            }
         }
     }
 
