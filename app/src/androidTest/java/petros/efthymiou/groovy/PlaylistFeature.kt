@@ -13,6 +13,7 @@ import com.schibsted.spain.barista.assertion.BaristaRecyclerViewAssertions.asser
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertDisplayed
 import com.schibsted.spain.barista.assertion.BaristaVisibilityAssertions.assertNotDisplayed
 import com.schibsted.spain.barista.internal.matcher.DrawableMatcher.Companion.withDrawable
+import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.allOf
 import org.hamcrest.Description
 import org.hamcrest.Matcher
@@ -31,9 +32,6 @@ import petros.efthymiou.groovy.playlist.idlingResource
  */
 
 class PlaylistFeature : BaseUITest() {
-    val mActivityRule = ActivityTestRule(MainActivity::class.java)
-        @Rule get
-
     @Test
     fun displaysLoaderWhileFetchingThePlaylists() {
         IdlingRegistry.getInstance().unregister(idlingResource)
@@ -46,8 +44,7 @@ class PlaylistFeature : BaseUITest() {
     }
 
     @Test
-    fun displaysListOfPlaylists() {
-
+    fun displaysListOfPlaylists(){
         assertRecyclerViewItemCount(R.id.playlists_list, 10)
 
         onView(

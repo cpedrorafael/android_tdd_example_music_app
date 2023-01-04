@@ -16,4 +16,8 @@ class PlaylistRepository @Inject constructor(
             else
                 Result.failure(it.exceptionOrNull()!!)
         }
+
+    suspend fun getPlaylistDetails(): Flow<Result<PlaylistDetails>> {
+        return flow {  }
+    }
 }
